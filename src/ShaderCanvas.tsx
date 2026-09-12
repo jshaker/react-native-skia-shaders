@@ -10,6 +10,8 @@ export interface ShaderCanvasProps {
   effect: SkRuntimeEffect;
   /** Builds the uniforms for a frame. Must be a worklet-safe pure function. */
   uniformsForFrame: (resolution: [number, number], timeSeconds: number) => Uniforms;
+  /** Child shaders bound to the effect's `uniform shader` slots, in declaration order. */
+  shaderChildren?: ReactNode;
   children?: ReactNode;
 }
 
@@ -29,7 +31,7 @@ export function compileEffect(source: string): SkRuntimeEffect {
  * Measures itself, then fills that box with `effect`. Time advances at
  * `speed` from a `frame` millisecond offset, matching the upstream mount.
  */
-export function ShaderCanvas({ style, speed, frame, effect, uniformsForFrame, children }: ShaderCanvasProps) {
+export function ShaderCanvas({ style, speed, frame, effect, uniformsForFrame, shaderChildren, children }: ShaderCanvasProps) {
   const [size, setSize] = useState<[number, number] | null>(null);
   const clock = useClock();
 
@@ -50,7 +52,9 @@ export function ShaderCanvas({ style, speed, frame, effect, uniformsForFrame, ch
       {size && (
         <Canvas style={StyleSheet.absoluteFill}>
           <Fill>
-            <Shader source={effect} uniforms={uniforms} />
+            <Shader source={effect} uniforms={uniforms}>
+              {shaderChildren}
+            </Shader>
           </Fill>
         </Canvas>
       )}

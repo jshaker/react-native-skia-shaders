@@ -39,6 +39,7 @@ export function render(
   width: number,
   height: number,
   name?: string,
+  children: unknown[] = [],
 ): RenderResult {
   const effect = compile(CanvasKit, sksl);
   const flat: number[] = [];
@@ -52,7 +53,7 @@ export function render(
   const surface = CanvasKit.MakeSurface(width, height);
   if (!surface) throw new Error('MakeSurface failed');
   const paint = new CanvasKit.Paint();
-  const shader = effect.makeShader(flat);
+  const shader = children.length ? effect.makeShaderWithChildren(flat, children as any) : effect.makeShader(flat);
   paint.setShader(shader);
   surface.getCanvas().drawPaint(paint);
   const image = surface.makeImageSnapshot();
@@ -73,4 +74,12 @@ export function render(
   image.delete();
   surface.delete();
   return { pixels, width, height };
+}
+
+/** The bundled noise texture as a repeat-tiled CanvasKit shader. */
+export function noiseShader(CanvasKit: CanvasKit, base64: string) {
+  const bytes = Buffer.from(base64, 'base64');
+  const image = CanvasKit.MakeImageFromEncoded(bytes);
+  if (!image) throw new Error('noise texture failed to decode');
+  return image.makeShaderOptions(CanvasKit.TileMode.Repeat, CanvasKit.TileMode.Repeat, CanvasKit.FilterMode.Nearest, CanvasKit.MipmapMode.None);
 }

@@ -46,6 +46,10 @@ are in points, not device pixels.
 `MeshGradient` adds `colors` (up to 10, any CSS hex/rgb/hsl string),
 `distortion`, `swirl`, `grainMixer`, and `grainOverlay`, all 0..1.
 
+`GrainGradient` adds `colorBack`, `colors` (up to 7), `softness`, `intensity`,
+`noise` (all 0..1) and `shape`: `wave`, `dots`, `truchet`, `corners`,
+`ripple`, `blob`, or `sphere`. Presets are exported as `grainGradientPresets`.
+
 ### Lower-level API
 
 The SkSL source and a uniform builder are exported for each shader, so you can
@@ -67,13 +71,15 @@ const uniforms = meshGradientUniforms(params, [width, height], timeSeconds);
 | Upstream | Status |
 | --- | --- |
 | Mesh Gradient | ported |
+| Grain Gradient | ported (all seven shapes) |
 | Everything else | not yet |
 
 Porting a shader means translating its fragment shader to SkSL (mostly
 mechanical: no `#version`, no `precision`, `main(vec2)` returns premultiplied
 `vec4`, sizing math moves from the vertex stage into `getObjectUV`) and adding
-a uniform builder plus presets. Shaders that sample a noise texture need an
-`ImageShader` child and are the harder half.
+a uniform builder plus presets. Shaders that sample a noise texture take the bundled
+image as an `ImageShader` child (see `GrainGradient`). SkSL has no `fwidth`,
+so derivative-based anti-aliasing becomes a fixed epsilon.
 
 ## Development
 

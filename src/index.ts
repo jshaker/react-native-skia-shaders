@@ -21,3 +21,18 @@ export {
   type ShaderSizingUniforms,
 } from './sksl/sizing';
 export type { ShaderMotionParams, ShaderPreset } from './types';
+export { GrainGradient, type GrainGradientProps } from './GrainGradient';
+export {
+  grainGradientSkSL,
+  grainGradientUniforms,
+  grainGradientPresets,
+  grainGradientDefaultPreset,
+  grainGradientMeta,
+  GrainGradientShapes,
+  type GrainGradientShape,
+  type GrainGradientParams,
+  type GrainGradientUniforms,
+  type GrainGradientPreset,
+} from './shaders/grain-gradient';
+export { getNoiseTexture } from './useNoiseTexture';
+export { noiseTextureBase64, noiseTextureSize } from './noise-texture';

@@ -111,21 +111,35 @@ vec3 getBoxSize(float boxRatio, vec2 givenBoxSize) {
   return vec3(box, noFitBoxWidth);
 }
 
-vec2 getObjectUV(vec2 fragCoord) {
-  vec2 uv = fragCoord / u_resolution - .5;
-  uv.y = -uv.y;
-
-  vec2 boxOrigin = vec2(.5 - u_originX, u_originY - .5);
+vec2 getGivenBoxSize() {
   vec2 givenBoxSize = max(vec2(u_worldWidth, u_worldHeight), vec2(1.)) * u_pixelRatio;
-  float r = u_rotation * PI / 180.;
-  mat2 graphicRotation = mat2(cos(r), sin(r), -sin(r), cos(r));
-  vec2 graphicOffset = vec2(-u_offsetX, u_offsetY);
-
-  vec2 fixedRatioBoxGivenSize = vec2(
+  return vec2(
     (u_worldWidth == 0.) ? u_resolution.x : givenBoxSize.x,
     (u_worldHeight == 0.) ? u_resolution.y : givenBoxSize.y
   );
-  vec2 objectBoxSize = getBoxSize(1., fixedRatioBoxGivenSize).xy;
+}
+
+vec2 getBaseUV(vec2 fragCoord) {
+  vec2 uv = fragCoord / u_resolution - .5;
+  uv.y = -uv.y;
+  return uv;
+}
+
+mat2 getGraphicRotation() {
+  float r = u_rotation * PI / 180.;
+  return mat2(cos(r), sin(r), -sin(r), cos(r));
+}
+
+vec2 getObjectBoxSize() {
+  return getBoxSize(1., getGivenBoxSize()).xy;
+}
+
+vec2 getObjectUV(vec2 fragCoord) {
+  vec2 uv = getBaseUV(fragCoord);
+  vec2 boxOrigin = vec2(.5 - u_originX, u_originY - .5);
+  mat2 graphicRotation = getGraphicRotation();
+  vec2 graphicOffset = vec2(-u_offsetX, u_offsetY);
+  vec2 objectBoxSize = getObjectBoxSize();
   vec2 objectWorldScale = u_resolution / objectBoxSize;
 
   uv *= objectWorldScale;
@@ -133,6 +147,50 @@ vec2 getObjectUV(vec2 fragCoord) {
   uv += graphicOffset;
   uv /= u_scale;
   uv = graphicRotation * uv;
+  return uv;
+}
+`;
+
+/**
+ * Pattern-space UV: unlike object UV it keeps its pixel scale as the canvas
+ * grows (tiling patterns stay the same size). Scaled by 0.01 to match the
+ * upstream convention.
+ */
+export const patternUV = `
+vec3 getPatternBoxData() {
+  vec2 patternBoxGivenSize = getGivenBoxSize();
+  float patternBoxRatio = patternBoxGivenSize.x / patternBoxGivenSize.y;
+  return getBoxSize(patternBoxRatio, patternBoxGivenSize);
+}
+
+vec2 getPatternBoxSize() {
+  return getPatternBoxData().xy;
+}
+
+vec2 getPatternUV(vec2 fragCoord) {
+  vec2 uv = getBaseUV(fragCoord);
+  vec2 boxOrigin = vec2(.5 - u_originX, u_originY - .5);
+  mat2 graphicRotation = getGraphicRotation();
+  vec2 graphicOffset = vec2(-u_offsetX, u_offsetY);
+
+  vec3 boxSizeData = getPatternBoxData();
+  vec2 patternBoxSize = boxSizeData.xy;
+  float patternBoxNoFitBoxWidth = boxSizeData.z;
+  vec2 patternBoxScale = u_resolution / patternBoxSize;
+
+  uv += graphicOffset / patternBoxScale;
+  uv += boxOrigin;
+  uv -= boxOrigin / patternBoxScale;
+  uv *= u_resolution;
+  uv /= u_pixelRatio;
+  if (u_fit > 0.) {
+    uv *= (patternBoxNoFitBoxWidth / patternBoxSize.x);
+  }
+  uv /= u_scale;
+  uv = graphicRotation * uv;
+  uv += boxOrigin / patternBoxScale;
+  uv -= boxOrigin;
+  uv *= .01;
   return uv;
 }
 `;

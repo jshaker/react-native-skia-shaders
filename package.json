@@ -1,0 +1,58 @@
+{
+  "name": "react-native-skia-shaders",
+  "version": "0.1.0",
+  "description": "Paper Shaders ported to SkSL for React Native Skia: mesh gradients and friends on iOS, Android, and web.",
+  "license": "Apache-2.0",
+  "repository": "github:jshaker/react-native-skia-shaders",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "keywords": [
+    "react-native",
+    "skia",
+    "shaders",
+    "sksl",
+    "mesh-gradient",
+    "paper-shaders",
+    "expo"
+  ],
+  "peerDependencies": {
+    "@shopify/react-native-skia": ">=1.0.0",
+    "react": ">=18",
+    "react-native": ">=0.73",
+    "react-native-reanimated": ">=3.0.0"
+  },
+  "devDependencies": {
+    "@shopify/react-native-skia": "^2.2.12",
+    "@types/node": "^22.20.2",
+    "@types/react": "^19.0.0",
+    "canvaskit-wasm": "^0.40.0",
+    "react": "^19.0.0",
+    "react-native": "^0.81.0",
+    "react-native-reanimated": "^4.1.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

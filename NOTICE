@@ -1,0 +1,9 @@
+react-native-skia-shaders
+Copyright 2026 Jeremie Shaker
+
+This product is a port of Paper Shaders (https://github.com/paper-design/shaders),
+Copyright Paper Design, licensed under the Apache License, Version 2.0.
+The GLSL sources were translated to SkSL for React Native Skia.
+
+Powered by Paper Shaders:
+https://shaders.paper.design

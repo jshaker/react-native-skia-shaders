@@ -41,8 +41,8 @@ export const GrainGradient = memo(function GrainGradient({
   worldHeight = d.worldHeight,
 }: GrainGradientProps) {
   const colorsKey = colors.join('|');
-  const uniformsForFrame = useCallback(
-    (resolution: [number, number], time: number) =>
+  const uniforms = useCallback(
+    (resolution: [number, number]) =>
       grainGradientUniforms(
         {
           colorBack,
@@ -62,7 +62,6 @@ export const GrainGradient = memo(function GrainGradient({
           worldHeight,
         },
         resolution,
-        time,
       ),
     [colorBack, colorsKey, softness, intensity, noise, shape, fit, scale, rotation, originX, originY, offsetX, offsetY, worldWidth, worldHeight],
   );
@@ -73,7 +72,7 @@ export const GrainGradient = memo(function GrainGradient({
       speed={speed}
       frame={frame}
       effect={compileEffect(grainGradientSkSL)}
-      uniformsForFrame={uniformsForFrame}
+      uniforms={uniforms}
       shaderChildren={
         <ImageShader
           image={getNoiseTexture()}

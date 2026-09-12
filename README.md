@@ -61,7 +61,7 @@ import { Shader, Fill } from '@shopify/react-native-skia';
 import { compileEffect, meshGradientSkSL, meshGradientUniforms } from 'react-native-skia-shaders';
 
 const effect = compileEffect(meshGradientSkSL);
-const uniforms = meshGradientUniforms(params, [width, height], timeSeconds);
+const uniforms = { ...meshGradientUniforms(params, [width, height]), u_time: seconds };
 
 <Fill><Shader source={effect} uniforms={uniforms} /></Fill>
 ```
@@ -80,6 +80,18 @@ mechanical: no `#version`, no `precision`, `main(vec2)` returns premultiplied
 a uniform builder plus presets. Shaders that sample a noise texture take the bundled
 image as an `ImageShader` child (see `GrainGradient`). SkSL has no `fwidth`,
 so derivative-based anti-aliasing becomes a fixed epsilon.
+
+## Example app
+
+`example/` is an Expo app that imports the library from `../src`:
+
+```sh
+cd example && npm install && npm run web   # or ios / android
+```
+
+On web, Skia binds CanvasKit at import time, so the demo is loaded through
+`WithSkiaWeb` (see `example/App.web.tsx`) and nothing imports the library
+before that resolves.
 
 ## Development
 

@@ -141,8 +141,7 @@ export interface MeshGradientParams extends ShaderSizingParams, ShaderMotionPara
 }
 
 export type MeshGradientUniforms = ShaderSizingUniforms & {
-  u_time: number;
-  u_colors: Float32Array;
+  u_colors: number[];
   u_colorsCount: number;
   u_distortion: number;
   u_swirl: number;
@@ -200,16 +199,14 @@ export const meshGradientPresets: MeshGradientPreset[] = [
   },
 ];
 
-/** Build the full uniform set for a frame. `time` is in seconds. */
+/** Uniforms for the given params; `u_time` is supplied per frame by the canvas. */
 export function meshGradientUniforms(
   params: Required<Omit<MeshGradientParams, 'speed' | 'frame'>>,
   resolution: [number, number],
-  time: number,
 ): MeshGradientUniforms {
   const colors: RGBA[] = params.colors.map(parseColor);
   return {
     ...sizingUniforms(params, resolution),
-    u_time: time,
     u_colors: packColors(colors, meshGradientMeta.maxColorCount),
     u_colorsCount: Math.min(colors.length, meshGradientMeta.maxColorCount),
     u_distortion: params.distortion,

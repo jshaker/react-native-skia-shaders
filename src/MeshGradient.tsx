@@ -37,8 +37,8 @@ export const MeshGradient = memo(function MeshGradient({
   worldHeight = d.worldHeight,
 }: MeshGradientProps) {
   const colorsKey = colors.join('|');
-  const uniformsForFrame = useCallback(
-    (resolution: [number, number], time: number) =>
+  const uniforms = useCallback(
+    (resolution: [number, number]) =>
       meshGradientUniforms(
         {
           colors: colorsKey.split('|'),
@@ -57,7 +57,6 @@ export const MeshGradient = memo(function MeshGradient({
           worldHeight,
         },
         resolution,
-        time,
       ),
     [colorsKey, distortion, swirl, grainMixer, grainOverlay, fit, scale, rotation, originX, originY, offsetX, offsetY, worldWidth, worldHeight],
   );
@@ -68,7 +67,7 @@ export const MeshGradient = memo(function MeshGradient({
       speed={speed}
       frame={frame}
       effect={compileEffect(meshGradientSkSL)}
-      uniformsForFrame={uniformsForFrame}
+      uniforms={uniforms}
     >
       {children}
     </ShaderCanvas>

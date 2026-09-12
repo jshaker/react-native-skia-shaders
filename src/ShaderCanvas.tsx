@@ -8,8 +8,8 @@ export interface ShaderCanvasProps {
   speed: number;
   frame: number;
   effect: SkRuntimeEffect;
-  /** Builds the uniforms for a frame. Must be a worklet-safe pure function. */
-  uniformsForFrame: (resolution: [number, number], timeSeconds: number) => Uniforms;
+  /** Uniforms for the current props and resolution; `u_time` is added per frame on the UI thread. */
+  uniforms: (resolution: [number, number]) => Uniforms;
   /** Child shaders bound to the effect's `uniform shader` slots, in declaration order. */
   shaderChildren?: ReactNode;
   children?: ReactNode;
@@ -31,7 +31,7 @@ export function compileEffect(source: string): SkRuntimeEffect {
  * Measures itself, then fills that box with `effect`. Time advances at
  * `speed` from a `frame` millisecond offset, matching the upstream mount.
  */
-export function ShaderCanvas({ style, speed, frame, effect, uniformsForFrame, shaderChildren, children }: ShaderCanvasProps) {
+export function ShaderCanvas({ style, speed, frame, effect, uniforms: buildUniforms, shaderChildren, children }: ShaderCanvasProps) {
   const [size, setSize] = useState<[number, number] | null>(null);
   const clock = useClock();
 
@@ -40,12 +40,13 @@ export function ShaderCanvas({ style, speed, frame, effect, uniformsForFrame, sh
     setSize((prev) => (prev && prev[0] === width && prev[1] === height ? prev : [width, height]));
   };
 
-  const resolution = useMemo(() => size ?? [1, 1], [size]);
+  const base = useMemo(() => buildUniforms(size ?? [1, 1]), [size, buildUniforms]);
 
+  // Only plain data crosses into the worklet: the builder runs on the JS thread.
   const uniforms = useDerivedValue(() => {
-    const t = (frame + clock.value * speed) / 1000;
-    return uniformsForFrame(resolution as [number, number], t);
-  }, [frame, speed, resolution, uniformsForFrame]);
+    'worklet';
+    return { ...base, u_time: (frame + clock.value * speed) / 1000 };
+  }, [base, frame, speed]);
 
   return (
     <View style={style} onLayout={onLayout}>

@@ -35,7 +35,7 @@ export interface RenderResult {
 export function render(
   CanvasKit: CanvasKit,
   sksl: string,
-  uniforms: Record<string, number | number[] | Float32Array>,
+  uniforms: Record<string, number | number[]>,
   width: number,
   height: number,
   name?: string,

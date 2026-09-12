@@ -260,9 +260,8 @@ export interface GrainGradientParams extends ShaderSizingParams, ShaderMotionPar
 }
 
 export type GrainGradientUniforms = ShaderSizingUniforms & {
-  u_time: number;
   u_colorBack: RGBA;
-  u_colors: Float32Array;
+  u_colors: number[];
   u_colorsCount: number;
   u_softness: number;
   u_intensity: number;
@@ -367,12 +366,10 @@ export const grainGradientPresets: GrainGradientPreset[] = [
 export function grainGradientUniforms(
   params: Required<Omit<GrainGradientParams, 'speed' | 'frame'>>,
   resolution: [number, number],
-  time: number,
 ): GrainGradientUniforms {
   const colors = params.colors.map(parseColor);
   return {
     ...sizingUniforms(params, resolution),
-    u_time: time,
     u_colorBack: parseColor(params.colorBack),
     u_colors: packColors(colors, grainGradientMeta.maxColorCount),
     u_colorsCount: Math.min(colors.length, grainGradientMeta.maxColorCount),

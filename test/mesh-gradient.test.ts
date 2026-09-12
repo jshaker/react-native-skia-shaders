@@ -12,7 +12,7 @@ const SIZE = 256;
 function uniformsFor(presetName: string, t: number, res: [number, number] = [SIZE, SIZE]) {
   const preset = meshGradientPresets.find((p) => p.name === presetName)!;
   const { speed: _s, frame: _f, ...params } = preset.params;
-  return meshGradientUniforms(params, res, t);
+  return { ...meshGradientUniforms(params, res), u_time: t };
 }
 
 function stats(pixels: Uint8Array) {
@@ -49,8 +49,7 @@ describe('meshGradient SkSL', () => {
 
   it('keeps colour opacity when a colour is translucent', () => {
     const u = uniformsFor('Default', 0);
-    u.u_colors = new Float32Array(40);
-    u.u_colors.set([1, 0, 0, 0.5]);
+    u.u_colors = [1, 0, 0, 0.5, ...new Array(36).fill(0)];
     u.u_colorsCount = 1;
     const { pixels } = render(CanvasKit, meshGradientSkSL, u, 16, 16);
     const { minA, maxA } = stats(pixels);

@@ -78,9 +78,9 @@ function parseHsla(input: string): RGBA | null {
   return [hue2rgb(p, q, h + 1 / 3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1 / 3), a];
 }
 
-/** Pack up to `max` colours into a flat Float32Array for a `vec4[max]` uniform. */
-export function packColors(colors: RGBA[], max: number): Float32Array {
-  const out = new Float32Array(max * 4);
-  colors.slice(0, max).forEach((c, i) => out.set(c, i * 4));
+/** Pack up to `max` colours into a flat array for a `vec4[max]` uniform. */
+export function packColors(colors: RGBA[], max: number): number[] {
+  const out = new Array<number>(max * 4).fill(0);
+  colors.slice(0, max).forEach((c, i) => out.splice(i * 4, 4, ...c));
   return out;
 }

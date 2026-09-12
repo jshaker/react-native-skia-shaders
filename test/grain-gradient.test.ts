@@ -15,7 +15,7 @@ const SIZE = 256;
 function uniformsFor(name: string, t: number, res: [number, number] = [SIZE, SIZE]) {
   const preset = grainGradientPresets.find((p) => p.name === name)!;
   const { speed: _s, frame: _f, ...params } = preset.params;
-  return grainGradientUniforms(params, res, t);
+  return { ...grainGradientUniforms(params, res), u_time: t };
 }
 
 function distinct(pixels: Uint8Array) {
